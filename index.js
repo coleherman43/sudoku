@@ -1,6 +1,7 @@
 var numSelected = null;
 var tileSelected = false;
 var currTile = null;
+var lastTile = null;
 var errors = 0;
 //TO FIX LATER: 
 //Generate boards automatically instead of using this one
@@ -67,6 +68,7 @@ function setGame(){
     }
 }
 
+//Selects a number from the bottom list. Highlights by class
 function selectNumber(){
     if(numSelected){
         numSelected.classList.remove("number-selected");
@@ -79,21 +81,48 @@ function selectNumber(){
     numSelected.classList.add("number-selected");
 }
 
+//
 function selectTile(){
+    tile = this;
     if(numSelected){
-        if(this.innerText != ""){
-            return;
-        }
-        let coords = this.id.split("-");
-        let r = parseInt(coords[0]);
-        let c = parseInt(coords[1]);
-        
-        if (solution[r][c] == numSelected.id){
-            this.innerText = numSelected.id;
-        }else{
-            errors++;
-            document.getElementById("errors").innerText = errors;
+        tileSetNumber(tile);
+    }
+    tileHighlight(tile);
 
+}
+
+//Tests the currently selected number on the tile clicked. If works, sets tile value. Else adds error
+function tileSetNumber(tile){
+    if(tile.innerText != ""){
+        return;
+    }
+    let coords = tile.id.split("-");
+    let r = parseInt(coords[0]);
+    let c = parseInt(coords[1]);
+    
+    if (solution[r][c] == numSelected.id){
+        tile.innerText = numSelected.id;
+    }else{
+        errors++;
+        document.getElementById("errors").innerText = errors;
+    }
+}
+
+//Selects a tile to then add a number to. Highlights it.
+function tileHighlight(tile){
+    if(tileSelected){
+        if(currTile == tile){
+            tileSelected = false;
+            tile.classList.remove("number-selected");
+            return
         }
-    } 
+        lastTile = currTile;
+        currTile = tile;
+        lastTile.classList.remove("number-selected");
+        currTile.classList.add("number-selected");
+    }else{
+        tile.classList.add("number-selected");
+        currTile = tile;
+        tileSelected = true;
+    }
 }
